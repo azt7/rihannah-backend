@@ -128,10 +128,19 @@ class Booking extends Model
         $query->where('unit_id', $unitId)
               ->where('booking_status', '!=', 'cancelled')
               ->where(function ($q) use ($startDate, $endDate) {
-                  // Overlap detection: start_date < end_date AND end_date > start_date
-                  // We allow checkout day = next check-in day, so we use < and > (not <= and >=)
-                  $q->where('start_date', '<', $endDate)
-                    ->where('end_date', '>', $startDate);
+                  // Overlap detection with two cases:
+                  // 1. Standard overlap: start_date < end_date AND end_date > start_date
+                  //    (allows checkout day = next check-in day)
+                  // 2. Exact same dates (catches single-day same-date bookings)
+                  $q->where(function ($subQ) use ($startDate, $endDate) {
+                      $subQ->where('start_date', '<', $endDate)
+                           ->where('end_date', '>', $startDate);
+                  })
+                  ->orWhere(function ($subQ) use ($startDate, $endDate) {
+                      // Same exact dates (single-day or multi-day)
+                      $subQ->where('start_date', '=', $startDate)
+                           ->where('end_date', '=', $endDate);
+                  });
               });
 
         if ($excludeId) {
