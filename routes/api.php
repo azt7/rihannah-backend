@@ -10,9 +10,16 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    // Admin User Management
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin/users', [\App\Http\Controllers\Api\Admin\UserController::class, 'index']);
+        Route::post('/admin/users/{user}/status', [\App\Http\Controllers\Api\Admin\UserController::class, 'updateStatus']);
+        Route::post('/admin/users/{user}/role', [\App\Http\Controllers\Api\Admin\UserController::class, 'updateRole']);
+    });
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);

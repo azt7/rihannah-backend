@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
         // App settings
         Setting::create([
             'key' => 'app_name',
-            'value' => 'Chalet Booking System',
+            'value' => 'Rihannah Hub',
             'type' => 'string',
             'group' => 'general',
         ]);

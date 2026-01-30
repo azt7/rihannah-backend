@@ -17,6 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
         'phone',
         'is_active',
     ];
@@ -43,6 +44,11 @@ class User extends Authenticatable
     public function isStaff(): bool
     {
         return $this->role === 'staff';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
     }
 
     public function bookings(): HasMany

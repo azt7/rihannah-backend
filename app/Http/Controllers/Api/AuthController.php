@@ -35,6 +35,12 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->status !== 'approved') {
+            throw ValidationException::withMessages([
+                'email' => ['Your account is pending approval or has been rejected.'],
+            ]);
+        }
+
         // Revoke old tokens
         $user->tokens()->delete();
 
@@ -79,5 +85,30 @@ class AuthController extends Controller
                 'phone' => $user->phone,
             ],
         ]);
+    }
+
+    /**
+     * Register a new user request.
+     */
+    public function register(Request $request): JsonResponse
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:8',
+            'phone' => 'nullable|string',
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'role' => 'staff',
+            'status' => 'pending',
+            'is_active' => true,
+        ]);
+
+        return response()->json(['message' => 'Registration request sent. Please wait for admin approval.']);
     }
 }
