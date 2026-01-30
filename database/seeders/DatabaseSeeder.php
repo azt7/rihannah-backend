@@ -50,12 +50,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Tentative booking expiry hours (US-RA-03, US-SYS-02)
-        Setting::create([
-            'key' => 'tentative_expiry_hours',
-            'value' => '4',
-            'type' => 'integer',
-            'group' => 'booking',
-        ]);
+        // Tentative booking expiry hours (US-RA-03, US-SYS-02)
+        Setting::firstOrCreate(
+            ['key' => 'tentative_expiry_hours'],
+            [
+                'value' => '4',
+                'type' => 'integer',
+                'group' => 'booking',
+            ]
+        );
 
         // App settings
         Setting::create([
